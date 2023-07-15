@@ -3,12 +3,13 @@ import Layout from '../../Components/Layout/Layout'
 import AdminMenu from '../../Components/Layout/AdminMenu'
 import toast from "react-hot-toast";
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Select } from 'antd';
 const { Option } = Select;
 
-const CreateProduct = () => {
+const UpdateProduct = () => {
     const navigate = useNavigate();
+    const params = useParams();
 
     const [categories, setCategories] = useState([]);
     const [name, setName] = useState("");
@@ -18,6 +19,27 @@ const CreateProduct = () => {
     const [quantity, setQuantity] = useState("");
     const [shipping, setShipping] = useState("");
     const [photo, setPhoto] = useState("");
+    const [id, setId] = useState("");
+
+    // get single product
+    const getSingleProduct = async () => {
+        try {
+            const {data} = await axios.get(`${process.env.REACT_APP_API}/api/v1/product/get-product/${params.slug}`);
+
+            setName(data.product.name);
+            setId(data.product._id);
+            setDescription(data.product.description);
+            setCategory(data.product.category);
+            setPrice(data.product.price);
+            setQuantity(data.product.quantity);
+            setShipping(data.product.shipping);
+            setPhoto(data.product.photo);
+            
+        } catch (error) {
+            console.log(error);
+            toast.error('Something went wrong in getting single product')
+        }
+    }
 
     //get All categories
     const getAllCategories = async () => {
@@ -35,11 +57,12 @@ const CreateProduct = () => {
 
     useEffect(() => {
         getAllCategories();
+        getSingleProduct();
+        //eslint-disable-next-line
     },[]);
 
     // Create Product function
-    const handleCraete = async (e) => {
-        e.preventDefault();
+    const handleUpdate = async (e) => {
 
         try {
             const productData = new FormData()
@@ -47,11 +70,14 @@ const CreateProduct = () => {
             productData.append("description", description)
             productData.append("price", price)
             productData.append("quantity", quantity)
-            productData.append("photo", photo)
+            photo && productData.append("photo", photo)
             productData.append("category", category)
             productData.append("shipping", shipping)
             
-            const {data} = await axios.post(`${process.env.REACT_APP_API}/api/v1/product/create-product`, productData);
+            const {data} = await axios.put(
+                `${process.env.REACT_APP_API}/api/v1/product/update-product/${id}`, productData);
+            console.log(data);
+
             if(data?.success){
                 toast.success(data?.message);
                 navigate('/dashboard/admin/products');
@@ -66,6 +92,24 @@ const CreateProduct = () => {
         }
     }
 
+    // Delete product function
+    const handleDelete = async () => {
+        try {
+            let answer = window.prompt("Are you sure want to delete this product?")
+            if(!answer) return;
+
+            const { data } = await axios.delete(
+                `${process.env.REACT_APP_API}/api/v1/product/delete-product/${id}`
+            );
+
+            toast.success("Product deleted successfully");
+            navigate("/dashboard/admin/products");
+        } catch (error) {
+            console.log(error);
+            toast.error("something went wrong")
+        }
+    }
+
   return (
     <Layout title='Dashboard - Create Product'>
         <div className='container-fluid m-3 p-3'>
@@ -74,7 +118,7 @@ const CreateProduct = () => {
                     <AdminMenu />
                 </div>
                 <div className='col-md-9'>
-                    <h1>Create Product</h1>
+                    <h1>Update Product</h1>
                     <div className='m-1 w-75'>
                         {/* Selecing Category */}
                         <Select 
@@ -84,6 +128,7 @@ const CreateProduct = () => {
                             showSearch 
                             className='form-select mb-3'
                             onChange={(value) => {setCategory(value)}}
+                            value = {category.name}
                         >
                             {categories?.map(c => (
                                 <Option key={c._id} value={c._id}>{c.name}</Option>
@@ -106,7 +151,7 @@ const CreateProduct = () => {
                         </div>
                         {/* For img preview */}
                         <div className='mb-3'>
-                            {photo && (
+                            {photo ? (
                                 <div className='text-center'>
                                     <img 
                                         src={URL.createObjectURL(photo)} 
@@ -115,7 +160,17 @@ const CreateProduct = () => {
                                         className='img img-responsive'
                                     />
                                 </div>
-                            )}
+                            ) : (
+                                <div className='text-center'>
+                                    <img 
+                                        src={`${process.env.REACT_APP_API}/api/v1/product/product-photo/${id}`} 
+                                        alt='product_Photo' 
+                                        height={'200px'}
+                                        className='img img-responsive'
+                                    />
+                                </div>
+                            )
+                          }
                         </div>
 
                         <div className='mb-3'>
@@ -161,6 +216,7 @@ const CreateProduct = () => {
                             size="large" 
                             className='form-select mb-3'
                             onChange={(value) => {setShipping(value)}}
+                            value = {shipping ? "1" : "0"}
                         >
                             <Option value="0">No</Option>
                             <Option value="1">Yes</Option>
@@ -169,9 +225,14 @@ const CreateProduct = () => {
                         <div className='mb-3'>
                             <button 
                                 className='btn btn-primary'
-                                onClick={handleCraete}
+                                onClick={handleUpdate}
                             >
-                                Create Product
+                                Update Product
+                            </button>
+                        </div>
+                        <div className="mb-3">
+                            <button className="btn btn-danger" onClick={handleDelete}>
+                                Delete Product
                             </button>
                         </div>
                         
@@ -183,4 +244,4 @@ const CreateProduct = () => {
   )
 }
 
-export default CreateProduct
+export default UpdateProduct
