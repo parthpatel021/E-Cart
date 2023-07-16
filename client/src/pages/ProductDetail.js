@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
 import Layout from "./../Components/Layout/Layout";
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 const ProductDetails = () => {
     const params = useParams();
-    const navigate = useNavigate();
     const [product, setProduct] = useState({});
     const [relatedProducts, setRelatedProducts] = useState([]);
 
     //inital Product details
     useEffect(() => {
         if (params?.slug) getProduct();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [params?.slug]);
 
 
@@ -78,9 +78,7 @@ const ProductDetails = () => {
                                         {p.description.substring(0,30)+"..."}
                                     </p>
                                     <p className='card-text'>₹ {p.price}</p>
-                                    <button 
-                                        className='btn btn-primary ms-1'   
-                                    >More Details</button>
+                                    <button className='btn btn-primary ms-1'> More Details </button>
                                     <button className='btn btn-secondary ms-1'>Add to Cart</button>
                                 </div>
                             </div>
