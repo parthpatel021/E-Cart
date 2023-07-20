@@ -18,7 +18,7 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json()); 
 app.use(morgan("dev"));
 
 // routes
@@ -40,6 +40,7 @@ app.listen(PORT, () => {
       .white
   );
 });
+
 
 
 // Need To DO:-
