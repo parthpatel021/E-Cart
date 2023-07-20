@@ -1,17 +1,24 @@
-import React,{ useState,useEffect } from 'react'
-import Layout from '../../Components/Layout/Layout'
-import UserMenu from '../../Components/Layout/UserMenu'
+import React,{ useState,useEffect } from 'react';
+import AdminMenu from './../../Components/Layout/AdminMenu';
+import Layout from './../../Components/Layout/Layout';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 import { useAuth } from '../../context/auth';
 import moment from 'moment';
+import { Select } from 'antd';
 
-const Orders = () => {
+const { Option } = Select;
+
+const AdminOrders = () => {
+    const [status, setStatus] = useState(["Not Process", "Processing", "Shipped", "deliverd", "cancel"]);
+    const [changeStatus, setChangeStatus] = useState("");
+
     const [orders, setOrders] = useState([]);
     const [auth, setAuth] = useAuth();
 
     const getOrders = async () => {
         try {
-            const {data} =  await axios.get(`${process.env.REACT_APP_API}/api/v1/auth/orders`);
+            const {data} =  await axios.get(`${process.env.REACT_APP_API}/api/v1/auth/all-orders`);
             setOrders(data);
         } catch (error) {
             console.log(error);
@@ -21,12 +28,23 @@ const Orders = () => {
     useEffect(() => {
         if(auth?.token) getOrders();
     },[auth?.token])
+
+    const handleStatusChange = async (orderId,value) => {
+        try {
+            const {data} = await axios.put(`${process.env.REACT_APP_API}/api/v1/auth/order-status/${orderId}`,{status: value});
+
+            getOrders();
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
   return (
-    <Layout title={"Orders - E-Cart"}>
-        <div className='container-fluid p-3 m-3'>
+    <Layout itle='Dashboard - All Orders'>
+        <div className='container-fluid m-3 p-3'>
             <div className='row'>
                 <div className='col-md-3'>
-                    <UserMenu />
+                    <AdminMenu />
                 </div>
                 <div className='col-md-9'>
                     <h1>All Orders</h1>
@@ -48,7 +66,17 @@ const Orders = () => {
                                         <tbody>
                                             <tr>
                                                 <td>{i+1}</td>
-                                                <td>{o?.status}</td>
+                                                <td>
+                                                    <Select 
+                                                        bordered={false} 
+                                                        onChange={(value) => handleStatusChange(o._id,value)}
+                                                        defaultValue={o?.status}
+                                                    >
+                                                        {status.map((s,i) => (
+                                                            <Option key={i} value={s}>{s}</Option>
+                                                        ))}
+                                                    </Select>
+                                                </td>
                                                 <td>{o?.buyer?.name}</td>
                                                 <td>{moment(o?.createdAt).fromNow()}</td>
                                                 <td>{o?.payment.success ? "Success" : "Falied"}</td>
@@ -85,4 +113,4 @@ const Orders = () => {
   )
 }
 
-export default Orders
+export default AdminOrders
