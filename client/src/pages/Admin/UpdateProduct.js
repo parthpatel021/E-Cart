@@ -210,17 +210,19 @@ const UpdateProduct = () => {
                                 />
                         </div>
                         {/* Shipping Selection */}
-                        <Select 
-                            bordered={false} 
-                            placeholder="Select Shipping" 
-                            size="large" 
-                            className='form-select mb-3'
-                            onChange={(value) => {setShipping(value)}}
-                            value = {shipping ? "1" : "0"}
-                        >
-                            <Option value="0">No</Option>
-                            <Option value="1">Yes</Option>
-                        </Select>
+                        <div className='mb-3'>
+                            <Select 
+                                bordered={false} 
+                                placeholder="Select Shipping" 
+                                size="large" 
+                                className='form-select mb-3'
+                                onChange={(value) => {setShipping(value)}}
+                                value = {shipping ? "1" : "0"}
+                            >
+                                <Option value="0">No</Option>
+                                <Option value="1">Yes</Option>
+                            </Select>
+                        </div>
 
                         <div className='mb-3'>
                             <button 

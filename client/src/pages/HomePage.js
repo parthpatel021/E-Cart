@@ -6,6 +6,8 @@ import { Checkbox, Radio } from 'antd';
 import { Prices } from '../Components/Prices';
 import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/cart';
+import { AiOutlineReload } from "react-icons/ai";
+import "../Styles/Homepage.css";
 
 const HomePage = () => {
     const [products, setProducts] = useState([]);
@@ -122,9 +124,16 @@ const HomePage = () => {
 
     return (
         <Layout title={'All Products - Best Offers'}>
-            <div className='row mt-3'>
+            {/* banner image */}
+            <img
+                src="/images/banner.png"
+                className="banner-img"
+                alt="bannerimage"
+                width={"100%"}
+            />
+            <div className='container-fluid row mt-3 home-page'>
                 {/* FIlters */}
-                <div className='col-md-2 m-3'>
+                <div className='col-md-2 m-3 filters'>
                     
                     {/* Category Filter */}
                     <h4 className='text-center'>Filter By Category</h4>
@@ -148,7 +157,7 @@ const HomePage = () => {
                         </Radio.Group>
                     </div>
 
-                    <div className='d-flex flex-column mt-3'>
+                    <div className='d-flex flex-column'>
                         <button className='btn btn-danger' onClick={() => window.location.reload()}>
                             Reset Filters
                         </button>
@@ -168,25 +177,36 @@ const HomePage = () => {
                                     alt={p.name} 
                                 />
                                 <div className="card-body">
-                                    <h5 className="card-title">{p.name} </h5>
+                                    <div className="card-name-price">
+                                        <h5 className="card-title">{p.name} </h5>
+                                        <h5 className="card-title card-price">
+                                            {p.price.toLocaleString("en-IN", {
+                                                style: "currency",
+                                                currency: "INR",
+                                            })}
+                                        </h5>
+                                    </div>
                                     <p className="card-text">
-                                        {p.description.substring(0,30)+"..."}
+                                        {p.description.substring(0,60)+"..."}
                                     </p>
-                                    <p className='card-text'>₹ {p.price}</p>
-                                    <button 
-                                        className='btn btn-primary ms-1'
-                                        onClick={() => navigate(`/product/${p.slug}`)}    
-                                    >More Details</button>
-                                    <button 
-                                        className='btn btn-secondary ms-1'
-                                        onClick={() => {
-                                            setCart([...cart,p]);
-                                            localStorage.setItem('cart', JSON.stringify([...cart,p]))
-                                            toast.success('Item Added to Cart')
-                                        }}
-                                    >
-                                        Add to Cart
-                                    </button>
+                                    <div className="card-name-price">
+                                        <button 
+                                            className='btn btn-primary ms-1'
+                                            onClick={() => navigate(`/product/${p.slug}`)}    
+                                        >
+                                            More Details
+                                        </button>
+                                        <button 
+                                            className='btn btn-secondary ms-1'
+                                            onClick={() => {
+                                                setCart([...cart,p]);
+                                                localStorage.setItem('cart', JSON.stringify([...cart,p]))
+                                                toast.success('Item Added to Cart')
+                                            }}
+                                        >
+                                            Add to Cart
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -196,13 +216,20 @@ const HomePage = () => {
                     <div className='m-2 p-3'>
                         {products && products.length < total && (
                             <button 
-                                className='btn btn-warning' 
+                                className='btn loadmore' 
                                 onClick={(e) => {
                                     e.preventDefault();
                                     setPage(page+1);
                                 }}
                             >
-                                {loading ? 'Loading...': 'Load More'}
+                                {loading ? (
+                                    'Loading...'
+                                ) : (
+                                    <>
+                                        {" "}
+                                        Loadmore <AiOutlineReload />
+                                    </>
+                                )}
                             </button>
                         )}
                     </div>

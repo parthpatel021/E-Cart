@@ -64,7 +64,7 @@ const Profile = () => {
 
   return (
     <Layout title={"Profile - E-Cart"}>
-        <div className='container-fluid p-3 m-3'>
+        <div className='container-fluid p-3 m-3 dashboard'>
             <div className='row'>
                 <div className='col-md-3'>
                     <UserMenu />

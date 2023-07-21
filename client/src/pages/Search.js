@@ -17,7 +17,7 @@ const Search = () => {
                     ? 'No Products Found' 
                     : `Found ${values?.results.length}`}
                 </h6>
-                <div className='d-flex flex-wrap'>
+                <div className='d-flex flex-wrap mt-4'>
                         {/* Product Card */}
                         {values?.results.map(p => (
                             <div className="card m-2" style={{width: '18rem'}} key={p.name}>

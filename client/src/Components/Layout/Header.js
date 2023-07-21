@@ -11,7 +11,7 @@ import { Badge } from 'antd';
 const Header = () => {
     const [auth,setAuth] = useAuth();
     const categories = useCategory();
-    const [cart, setCart] = useCart();
+    const [cart] = useCart();
 
     const handleLogout = () => {
         setAuth({
@@ -24,7 +24,7 @@ const Header = () => {
     }
   return (
     <>
-        <nav className="navbar navbar-expand-lg bg-body-tertiary">
+        <nav className="navbar navbar-expand-lg bg-body-tertiary fixed-top">
             <div className="container-fluid">
                 {/* Navbar Toggler */}
                 <button 
