@@ -1,68 +1,77 @@
-import express from 'express';
-import { isAdmin, requireSignIn } from './../middlewares/authMiddleware.js';
-import formidable from 'express-formidable';
-import { 
-    braintreePaymrntController,
-    braintreeTokenController,
-    createProductController, 
-    deleteProductController, 
-    filterProductController,
-    getProductController, 
-    getSingleProductController, 
-    productCategoryController, 
-    productCountController, 
-    productListController, 
-    productPhotoController, 
-    relatedProductController, 
-    searchController, 
-    updateProductController 
-} from './../controllers/productController.js';
+import express from "express";
+import {
+  brainTreePaymentController,
+  braintreeTokenController,
+  createProductController,
+  deleteProductController,
+  getProductController,
+  getSingleProductController,
+  productCategoryController,
+  productCountController,
+  productFiltersController,
+  productListController,
+  productPhotoController,
+  realtedProductController,
+  searchProductController,
+  updateProductController,
+} from "../controllers/productController.js";
+import { isAdmin, requireSignIn } from "../middlewares/authMiddleware.js";
+import formidable from "express-formidable";
 
 const router = express.Router();
 
-// Routes
+//routes
+router.post(
+  "/create-product",
+  requireSignIn,
+  isAdmin,
+  formidable(),
+  createProductController
+);
+//routes
+router.put(
+  "/update-product/:pid",
+  requireSignIn,
+  isAdmin,
+  formidable(),
+  updateProductController
+);
 
-// Create-Product || POST
-router.post('/create-product', requireSignIn, isAdmin, formidable(), createProductController);
-
-//get products || GET
+//get products
 router.get("/get-product", getProductController);
 
-//single product || GET
+//single product
 router.get("/get-product/:slug", getSingleProductController);
 
-//get photo || GET
+//get photo
 router.get("/product-photo/:pid", productPhotoController);
 
-//delete product || DELETE
+//delete rproduct
 router.delete("/delete-product/:pid", deleteProductController);
 
-// update-Product || PUT
-router.put('/update-product/:pid', requireSignIn, isAdmin, formidable(), updateProductController);
+//filter product
+router.post("/product-filters", productFiltersController);
 
-// Filter product || POST
-router.post('/product-filters' ,filterProductController);
+//product count
+router.get("/product-count", productCountController);
 
-// Product Count || GET
-router.get('/product-count', productCountController);
+//product per page
+router.get("/product-list/:page", productListController);
 
-// Product per page || GET
-router.get('/product-list/:page', productListController);
+//search product
+router.get("/search/:keyword", searchProductController);
 
-// Search product || GET
-router.get('/search/:keyword', searchController);
+//similar product
+router.get("/related-product/:pid/:cid", realtedProductController);
 
-// Similar Product || GET
-router.get('related-product/:pid/:cid', relatedProductController);
+//category wise product
+router.get("/product-category/:slug", productCategoryController);
 
-// Category Wise Product || GET
-router.get('/product-category/:slug', productCategoryController);
+//payments routes
+//token
+router.get("/braintree/token", braintreeTokenController);
 
-
-//Payments Routes
-// token
-router.get('/braintree/token', braintreeTokenController);
-// payments
-router.post('/braintree/payment', requireSignIn, braintreePaymrntController);
+//payments
+router.post("/braintree/payment", requireSignIn, brainTreePaymentController);
 
 export default router;
