@@ -19,6 +19,8 @@ const HomePage = () => {
     const [total, setTotal] = useState(0);
     const [page, setPage] = useState(1);
     const [loading, setLoading] = useState(false);
+    const [loadMoreVar, setLoadMoreVar] = useState(false);
+    const [noProducts, setNoProducts] = useState(false);
 
     //get all cat
     const getAllCategory = async () => {
@@ -87,11 +89,17 @@ const HomePage = () => {
         setChecked(all);
     };
     useEffect(() => {
-        if (!checked.length || !radio.length) getAllProducts();
+        if (!checked.length || !radio.length){
+            getAllProducts();
+            setLoadMoreVar(true);
+        }
     }, [checked.length, radio.length]);
 
     useEffect(() => {
-        if (checked.length || radio.length) filterProduct();
+        if (checked.length || radio.length){ 
+            filterProduct();
+            setLoadMoreVar(false)
+        }
     }, [checked, radio]);
 
     //get filterd product
@@ -106,6 +114,12 @@ const HomePage = () => {
             console.log(error);
         }
     };
+
+    useEffect(() => {
+        if(products.length === 0)
+            setNoProducts(true);
+        else setNoProducts(false);
+    },[products.length])
     return (
         <Layout title={"All Products - Best offers "}>
             {/* banner image */}
@@ -204,17 +218,22 @@ const HomePage = () => {
                                 className="btn loadmore"
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    setPage(page + 1);
+                                    !noProducts && setPage(page + 1);
                                 }}
                             >
                                 {loading ? (
                                     "Loading ..."
-                                ) : (
-                                    <>
+                                ) : 
+                                    loadMoreVar &&
+                                        <>
                                         {" "}
                                         Loadmore <AiOutlineReload />
-                                    </>
-                                )}
+                                        </>
+                                    
+                                }
+                                {
+                                    noProducts && <p>No Products</p>
+                                }
                             </button>
                         )}
                     </div>
